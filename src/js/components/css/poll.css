@@ -1,0 +1,18 @@
+.polling-item {
+    padding: 10px;
+    border: 1px solid #000;
+    border-radius: 3px;
+    background-color: rgb(167, 214, 255);
+    display: flex;
+    justify-content: space-between;
+    min-width: 400px;
+}
+
+
+.poll-item-mail, .poll-item-message {
+    flex-basis: 37%;
+}
+
+.poll-item-time {
+    flex-basis: 25%
+}

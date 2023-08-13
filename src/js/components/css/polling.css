@@ -1,0 +1,18 @@
+.polling-widget {
+    background-color: rgb(167, 214, 255);
+    padding: 30px;
+    border-radius: 5px;
+}
+
+.polling-main {
+    padding: 15px;
+    border: 2px solid #222222;
+    border-radius: 5px;
+    background-color: rgb(138, 215, 244);
+}
+
+.polling-list {
+    list-style-type: none;
+    font-size: 20px;
+}
+
