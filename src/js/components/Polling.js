@@ -2,8 +2,8 @@ import "./css/polling.css";
 import Poll from "./Poll";
 import State from "./State";
 import { ajax } from "rxjs/ajax";
-import { Observable, interval, map, catchError, of, from } from "rxjs";
-import { switchMap, take } from "rxjs/operators";
+import { interval } from "rxjs";
+import { switchMap } from "rxjs/operators";
 
 export default class Polling {
   constructor(container) {
@@ -27,7 +27,6 @@ export default class Polling {
     this.element = element;
     this.pollList = this.element.querySelector(".polling-list");
 
-    //this.getUnreadMessages();
     this.getMessages();
   }
 
@@ -41,20 +40,19 @@ export default class Polling {
           createXHR: () => {
             return new XMLHttpRequest();
           },
-        })
-      )
+        }),
+      ),
     );
 
     stream$.subscribe(
       async (response) => {
         this.getUnreadMessages(response.response);
       },
-      (err) => console.log("err")
+      (err) => console.log(err),
     );
   }
 
   async getUnreadMessages(json) {
-    console.log(json);
     const { status, timestamp, messages } = json;
 
     if (!this.pollState) {
