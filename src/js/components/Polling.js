@@ -32,7 +32,7 @@ export default class Polling {
   }
 
   async getMessages() {
-    const stream$ = interval(1000).pipe(
+    const stream$ = interval(10000).pipe(
       switchMap(() =>
         ajax({
           url: "http://localhost:7070/messages/unread",
@@ -47,31 +47,38 @@ export default class Polling {
 
     stream$.subscribe(
       async (response) => {
-        //this.getUnreadMessages(response.response);
-        console.log(response);
+        this.getUnreadMessages(response.response);
       },
       (err) => console.log("err")
     );
   }
 
   async getUnreadMessages(json) {
+    console.log(json);
     const { status, timestamp, messages } = json;
 
-    this.pollState = new State(status, timestamp);
+    if (!this.pollState) {
+      this.pollState = new State(status, timestamp);
+    }
+
     this.renderMessages(messages);
   }
 
   renderMessages(messages) {
-    const stateMessages = [];
+    const ids = this.pollState.mesIds;
     messages.forEach((el) => {
+      if (ids.includes(el.id)) {
+        return;
+      }
       const message = new this.ItemType(el);
       const messageEl = message.element;
-      this.pollList.append(messageEl);
-      stateMessages.push({
+      this.pollList.prepend(messageEl);
+      this.pollState.add({
         type: message,
         element: messageEl,
       });
     });
-    this.pollState.messages = stateMessages;
+
+    console.log(this.pollState.messages);
   }
 }

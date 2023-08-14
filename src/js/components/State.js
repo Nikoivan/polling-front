@@ -2,13 +2,16 @@ export default class State {
   constructor(status, timestamp) {
     this.status = status;
     this.timestamp = timestamp;
+    this.messages = [];
+    this.messagesId = [];
   }
 
-  get messages() {
-    return this._messages;
+  get mesIds() {
+    return this.messagesId;
   }
 
-  set messages(messages) {
-    this._messages = messages;
+  add(data) {
+    this.messages.push(data);
+    this.messagesId.push(data.type.id);
   }
 }
