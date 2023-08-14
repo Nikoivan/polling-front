@@ -8,9 +8,9 @@ module.exports = merge(common, {
   optimization: {
     minimizer: [new CssMinimizerPlugin()],
   },
-  plugins: [
+  /* plugins: [
     new CopyWebpackPlugin({
       patterns: [{ from: "licenses", to: "licenses" }],
     }),
-  ],
+  ],*/
 });
