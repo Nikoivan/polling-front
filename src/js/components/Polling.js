@@ -2,7 +2,8 @@ import "./css/polling.css";
 import Poll from "./Poll";
 import State from "./State";
 import { ajax } from "rxjs/ajax";
-import { interval, map, catchError, of } from "rxjs";
+import { Observable, interval, map, catchError, of, from } from "rxjs";
+import { switchMap, take } from "rxjs/operators";
 
 export default class Polling {
   constructor(container) {
@@ -26,32 +27,34 @@ export default class Polling {
     this.element = element;
     this.pollList = this.element.querySelector(".polling-list");
 
-    // this.getUnreadMessages();
+    //this.getUnreadMessages();
     this.getMessages();
   }
 
-  getMessages() {
-    const obs$ = ajax.getJSON("http://localhost:7070/messages/unread").pipe(
-      map((userResponse) => console.log("users: ", userResponse)),
-      catchError((error) => {
-        console.log("error: ", error);
-        return of(error);
-      })
+  async getMessages() {
+    const stream$ = interval(1000).pipe(
+      switchMap(() =>
+        ajax({
+          url: "http://localhost:7070/messages/unread",
+          method: "GET",
+          crossDomain: true,
+          createXHR: () => {
+            return new XMLHttpRequest();
+          },
+        })
+      )
     );
 
-    obs$.subscribe({
-      next: (value) => console.log(value),
-      error: (err) => console.log(err),
-    });
-    /*const stream$ = ajax("http://localhost:7070/messages/unread").pipe(
-      map((val) => console.log(val))
+    stream$.subscribe(
+      async (response) => {
+        //this.getUnreadMessages(response.response);
+        console.log(response);
+      },
+      (err) => console.log("err")
     );
-    stream$.subscribe((val) => console.log(val));*/
   }
 
-  async getUnreadMessages() {
-    const response = await fetch("http://localhost:7070/messages/unread");
-    const json = await response.json();
+  async getUnreadMessages(json) {
     const { status, timestamp, messages } = json;
 
     this.pollState = new State(status, timestamp);
