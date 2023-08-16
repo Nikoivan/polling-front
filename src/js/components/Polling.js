@@ -3,7 +3,7 @@ import Poll from "./Poll";
 import State from "./State";
 import { ajax } from "rxjs/ajax";
 import { interval } from "rxjs";
-import { switchMap } from "rxjs/operators";
+import { catchError, switchMap } from "rxjs/operators";
 
 export default class Polling {
   constructor(container) {
@@ -31,7 +31,7 @@ export default class Polling {
   }
 
   async getMessages() {
-    const stream$ = interval(10000).pipe(
+    const stream$ = interval(1000).pipe(
       switchMap(() =>
         ajax({
           url: "http://localhost:7070/messages/unread",
@@ -40,7 +40,12 @@ export default class Polling {
           createXHR: () => {
             return new XMLHttpRequest();
           },
-        }),
+        }).pipe(
+          catchError((err) => {
+            console.log(err);
+            return stream$;
+          }),
+        ),
       ),
     );
 
@@ -53,6 +58,11 @@ export default class Polling {
   }
 
   async getUnreadMessages(json) {
+    if (json.error) {
+      console.log(json);
+      return;
+    }
+
     const { status, timestamp, messages } = json;
 
     if (!this.pollState) {
